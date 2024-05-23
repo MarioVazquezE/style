@@ -1,67 +1,49 @@
-const video = document.getElementById("videoElement");
-    const canvas = document.getElementById("canvasElement");
-    const photosContainer = document.getElementById("photosContainer");
+document.addEventListener('DOMContentLoaded', function() {
+    const videoElement = document.getElementById('videoElement');
+    const takeSnapshotButton = document.getElementById('takeSnapshot');
+    const photosContainer = document.getElementById('photosContainer');
+    const canvasElement = document.getElementById('canvasElement');
+    const context = canvasElement.getContext('2d');
 
+    // Acceder a la cámara
     navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function (stream) {
-            video.srcObject = stream;
-            console.log(stream);
+        .then((stream) => {
+            videoElement.srcObject = stream;
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch((err) => {
+            console.error('Error al acceder a la cámara: ', err);
         });
 
-    document.getElementById("takeSnapshot").addEventListener("click", () => {
-        takePicture();
+    // Tomar una foto al hacer clic en el botón
+    takeSnapshotButton.addEventListener('click', () => {
+        takePhoto();
     });
 
-    function takePicture() {
-        const aspectRatio = video.videoWidth / video.videoHeight;
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+    // Función para tomar una foto
+    function takePhoto() {
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+        context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-        let ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+        const dataUrl = canvasElement.toDataURL('image/png');
         const img = document.createElement('img');
-        img.src = canvas.toDataURL('image/jpeg');
-        img.style.width = '100%'; // Para mantener la misma proporción que el video
-        img.style.marginBottom = '10px';
-
-        const imgContainer = document.createElement('div');
-        imgContainer.style.position = 'relative';
-
-        const downloadButton = document.createElement('button');
-        downloadButton.innerText = 'Descargar';
-        downloadButton.style.position = 'absolute';
-        downloadButton.style.top = '5px';
-        downloadButton.style.right = '5px';
-        downloadButton.addEventListener('click', () => {
-            downloadImage(img.src);
-        });
-
-        const deleteButton = document.createElement('button');
-        deleteButton.innerText = 'Eliminar';
-        deleteButton.style.position = 'absolute';
-        deleteButton.style.top = '5px';
-        deleteButton.style.left = '5px';
-        deleteButton.addEventListener('click', () => {
-            imgContainer.remove();
-        });
-
-        imgContainer.appendChild(img);
-        imgContainer.appendChild(downloadButton);
-        imgContainer.appendChild(deleteButton);
-        photosContainer.appendChild(imgContainer);
+        img.src = dataUrl;
+        photosContainer.appendChild(img);
     }
-    document.querySelectorAll('input[type="checkbox"]').forEach(function (sensor) {
-        sensor.addEventListener('change', function () {
-          takeSnapshot();
-        });
+
+    // Establecer la conexión WebSocket con el servidor
+    const socket = new WebSocket('ws://localhost:3000');
+
+    // Cuando se abre la conexión
+    socket.addEventListener('open', function(event) {
+        console.log('Conexión establecida con el servidor');
     });
-    function downloadImage(imageUrl) {
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = 'photo.jpg';
-        link.click();
-    }
+
+    // Cuando se recibe un mensaje del servidor
+    socket.addEventListener('message', function(event) {
+        console.log('Mensaje recibido del servidor:', event.data);
+        if (event.data === 'take-photo') {
+            takePhoto(); // Llama a la función para tomar la foto
+        }
+    });
+});
