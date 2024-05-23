@@ -32,12 +32,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Establecer la conexión WebSocket con el servidor
-    const socket = new WebSocket('ws://localhost:3000');
-
-    // Cuando se abre la conexión
-    socket.addEventListener('open', function(event) {
-        console.log('Conexión establecida con el servidor');
-    });
+    
+       const socket = io();
+    socket.on('take-photo', function() {
+                takePhoto();
+            });
 
     // Cuando se recibe un mensaje del servidor
     socket.addEventListener('message', function(event) {
