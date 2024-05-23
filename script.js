@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Escuchar la señal 'take-photo' del servidor
     socket.on('take-photo', function() {
-        takePhoto();
-    });
+    console.log('Se recibió la señal para tomar una foto');
+    takePhoto(); // Llama a la función para tomar la foto
+});
 });
