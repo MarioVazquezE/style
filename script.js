@@ -32,17 +32,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Establecer la conexión WebSocket con el servidor
-    
-       const socket = io();
-    socket.on('take-photo', function() {
-                takePhoto();
-            });
+    const socket = io(); // Asegúrate de haber importado Socket.IO en tu HTML
 
-    // Cuando se recibe un mensaje del servidor
-    socket.addEventListener('message', function(event) {
-        console.log('Mensaje recibido del servidor:', event.data);
-        if (event.data === 'take-photo') {
-            takePhoto(); // Llama a la función para tomar la foto
-        }
+    // Escuchar la señal 'take-photo' del servidor
+    socket.on('take-photo', function() {
+        takePhoto();
     });
 });
