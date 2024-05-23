@@ -54,7 +54,11 @@ const video = document.getElementById("videoElement");
         imgContainer.appendChild(deleteButton);
         photosContainer.appendChild(imgContainer);
     }
-
+    document.querySelectorAll('input[type="checkbox"]').forEach(function (sensor) {
+        sensor.addEventListener('change', function () {
+          takeSnapshot();
+        });
+    });
     function downloadImage(imageUrl) {
         const link = document.createElement('a');
         link.href = imageUrl;
