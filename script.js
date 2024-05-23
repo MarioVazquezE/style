@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para tomar una foto
     function takePhoto() {
+        console.log('Se recibió la señal para tomar una foto');
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
         context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Escuchar la señal 'take-photo' del servidor
     socket.on('take-photo', function() {
-    console.log('Se recibió la señal para tomar una foto');
+    
     takePhoto(); // Llama a la función para tomar la foto
 });
 });
